@@ -6,9 +6,9 @@ from datetime import datetime
 import os
 from fabric.api import local, run, put, env
 
-
 env.hosts = ["18.234.105.201", "100.26.162.114"]
 env.user = "ubuntu"
+env.key_filename = '/AirBnB_clone_v2/my_key'
 
 def do_pack():
     """
@@ -40,15 +40,20 @@ def do_deploy(archive_path):
     folder = new_path.split('.')[0]
     
     # upload the archive 
-    if put(archive_path, "/tmp/").failed is True:
+    if put(archive_path, "/tmp/{}".format(new_path)).failed is True:
         print("upload  failed")
         return  False
+    # Creating the right path
+    if run("rm -rf /data/web_static/releases/{}/".format(folder)).failed is True:
+        return False
+    if run("mkdir -p /data/web_static/releases/{}/".format(folder)).failed is True:
+        return False
     # uncompress
     if run ("tar -xzf /tmp/{} -C /data/web_static/releases/{}".format(new_path, folder)).failed is True:
         print("uncompressing failed")
         return False
     # remove the archive
-    if run ("rm  /tmp/{}".format(archive_path)).failed is True:
+    if run ("rm  /tmp/{}".format(new_path)).failed is True:
         print("removing the archive")
         return False
     # move the content of web_static from uncompress folder
