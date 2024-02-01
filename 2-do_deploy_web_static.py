@@ -34,28 +34,41 @@ def do_deploy(archive_path):
         print("failed file doesn't exist")
         return False
 
-    try:
-        # Get the name of the archive
-        new_path = archive_path.split('/')[-1]
-        # Get the name of the archive without extension
-        folder = new_path.split('.')[0]
-        
-        # upload the archive 
-        put(archive_path, "/tmp/")
-        # uncompress
-        run ("tar -xzf /tmp/{} -C /data/web_static/releases/{}".format(new_path, folder))
-        # remove the archive
-        run ("rm  /tmp/{}".format(archive_path))
-        # move the content of web_static from uncompress folder
-        run ("mv /data/web_static/releases/{}/web_static/* /data/web_static/releases/{}".format(folder, folder))
-
-        # delete the symbolic link
-        run ("rm -rf /data/web_static/current")
-        # Remove content of web_static from uncompress folder
-        run ("rm -rf /data/web_static/releases/{}/web_static".format(folder))
-        # create a new symoblic link
-        run ("ln -sf /data/web_static/releases/{} /data/web_static/current".format(folder))
-        return True
-    except Exception as e:
-        print("failed")
+    # Get the name of the archive
+    new_path = archive_path.split('/')[-1]
+    # Get the name of the archive without extension
+    folder = new_path.split('.')[0]
+    
+    # upload the archive 
+    if put(archive_path, "/tmp/").failed is True:
+        print("upload  failed")
+        return  False
+    # uncompress
+    if run ("tar -xzf /tmp/{} -C /data/web_static/releases/{}".format(new_path, folder)).failed is True:
+        print("uncompressing failed")
         return False
+    # remove the archive
+    if run ("rm  /tmp/{}".format(archive_path)).failed is True:
+        print("removing the archive")
+        return False
+    # move the content of web_static from uncompress folder
+    if run ("mv /data/web_static/releases/{}/web_static/* /data/web_static/releases/{}".format(folder, folder)).failed is True:
+        print("moving file  to production directory failed")
+        return False
+
+    # delete the symbolic link
+    if run ("rm -rf /data/web_static/current").failed is True:
+        print("deletion the symbolic link failed")
+        return False
+    # Remove content of web_static from uncompress folder
+    if run ("rm -rf /data/web_static/releases/{}/web_static".format(folder)).failed is True:
+        print("removing conten of web_static failed")
+        return False
+    # create a new symoblic link
+    if run ("ln -sf /data/web_static/releases/{} /data/web_static/current".format(folder)).failed is True:
+        print("creating new symbolic link failed")
+        return False
+    
+    print("New version deployed!")
+    return  True
+
