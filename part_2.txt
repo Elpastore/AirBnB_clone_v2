@@ -54,3 +54,31 @@ try:
 	archive_name = f'web_static_{date}.tgz
 	local ("tar -czvf versions/archive_name web_static"
 
+NB: If your code doesn't work replace this line if not os.path.exists(versions): by ==> if not os.path.isdir("versions") is False:
+
+Task2: distributes an archive to your web servers, using the function do_deploy
+1.check iif the archive_path exist: 
+if not os.path.isfile(archive_name) is False==>return False
+2. 
+	a. upload the archive to the /tmp/ directory of web servers
+	env.hosts = ['IP web01', 'IP web02']
+	a = put ("archive_path", /tmp/)
+	if a.failed is True
+		return FAlse
+	b. Uncompress the archive to the folder /data/web_static/releases/<archive filename without extension> on the web server
+	new_path = archive_path.split('/')[-1]
+	folder = new_path.split(".")[0]
+	run (tar -xzf /tmp/archive_path -C /data/web_static/releases/)
+	
+	c. Delete the archive from web server
+	run ("rm  /tmp/archive_path")
+	
+	d. Delete symbolic link
+	run ("rm -rf /data/web_static/current
+
+	e. Create a new  the symbolic link /data/web_static/current on the web server, linked to the new version of your code (/data/		web_static/releases/<archive filename without extension>)
+	Before creating the symbolic link let's move the uncompressed  content to the parent directory
+	mv /data/web_static/releases/folder/web_static/* /data/web_static/releases/folder
+	then delete the web_static
+	rm -rf /data/web_static/releases/folder/web_static
+	ln -sf /data/web_static/releases/folder/  /data/web_static/current
