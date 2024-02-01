@@ -12,13 +12,13 @@ def do_pack():
     method that generate a .tgz archive
     """
     try:
-        if os.path.isdir("versions") is False:    
+        if os.path.isdir("versions") is False:
             local("mkdir versions")
-        
-        date =  datetime.now().strftime("%Y%m%d%H%M%S")
+
+        date = datetime.now().strftime("%Y%m%d%H%M%S")
         archive_name = f" versions/web_static_{date}.tgz"
 
         local("tar -cvzf {} web_static".format(archive_name))
         return archive_name
-    except:
+    except CommandFailed:
         return None
