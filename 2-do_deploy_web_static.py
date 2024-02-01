@@ -2,14 +2,13 @@
 """
 Fabric file
 """
-import os
 from datetime import datetime
-from fabric.api import local
+import os
+from fabric.api import local, run, put, env
 
 
 env.hosts = ["18.234.105.201", "100.26.162.114"]
 env.user = "ubuntu"
-
 
 def do_pack():
     """
@@ -31,7 +30,8 @@ def do_deploy(archive_path):
     """
     method for deploy web static into servers
     """
-    if os.path.isfile(archive_path) is False:
+    if  os.path.isfile(archive_path) is False:
+        print("failed file doesn't exist")
         return False
 
     try:
@@ -45,15 +45,17 @@ def do_deploy(archive_path):
         # uncompress
         run ("tar -xzf /tmp/{} -C /data/web_static/releases/{}".format(new_path, folder))
         # remove the archive
-        run ("rm  /tmp/{}".format(new_path)
+        run ("rm  /tmp/{}".format(archive_path))
+        # move the content of web_static from uncompress folder
+        run ("mv /data/web_static/releases/{}/web_static/* /data/web_static/releases/{}".format(folder, folder))
+
         # delete the symbolic link
         run ("rm -rf /data/web_static/current")
-        # move the content of web_static from uncompress folder
-        run ("mv /data/web/static/releases/{}/web_static/* /data/web/static/releases/{}".format(folder, folder)
         # Remove content of web_static from uncompress folder
         run ("rm -rf /data/web_static/releases/{}/web_static".format(folder))
         # create a new symoblic link
-        run ("ln -sf /data/web_static/releases/{}  /data/web_static/current".format(folder))
+        run ("ln -sf /data/web_static/releases/{} /data/web_static/current".format(folder))
         return True
-    except OSError:
+    except Exception as e:
+        print("failed")
         return False
