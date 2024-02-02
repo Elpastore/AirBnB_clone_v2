@@ -11,23 +11,6 @@ env.user = "ubuntu"
 env.key_filename = '/AirBnB_clone_v2/my_key'
 
 
-def do_pack():
-    """
-    method that generate a .tgz archive
-    """
-    try:
-        if os.path.isdir("versions") is False:
-            local("mkdir versions")
-
-        date = datetime.now().strftime("%Y%m%d%H%M%S")
-        archive_name = f" versions/web_static_{date}.tgz"
-
-        local("tar -cvzf {} web_static".format(archive_name))
-        return archive_name
-    except CommandFailed:
-        return None
-
-
 def do_deploy(archive_path):
     """
     method for deploy web static into servers
