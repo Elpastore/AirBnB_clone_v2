@@ -2,6 +2,7 @@
 """
 Fabric file
 """
+
 from datetime import datetime
 import os
 from fabric.api import local, run, put, env
@@ -18,11 +19,14 @@ def do_pack():
     try:
         if os.path.isdir("versions") is False:
             local("mkdir versions")
+            print('versions is created')
 
         date = datetime.now().strftime("%Y%m%d%H%M%S")
-        archive_name = f" versions/web_static_{date}.tgz"
+        archive_name = f"versions/web_static_{date}.tgz"
 
         local("tar -cvzf {} web_static".format(archive_name))
+        print('compression done')
+        print(archive_name)
         return archive_name
     except CommandFailed:
         return None
@@ -30,13 +34,13 @@ def do_pack():
 
 def do_deploy(archive_path):
     """
-    method for deploy web static into servers
+     method for deploy web static into servers
     """
-    if os.path.isfile(archive_path) is False:
-        print("failed file doesn't exist")
+    if os.path.exists(archive_path) is False:
+        print("Warning no file to compress")
         return False
 
-    # Get the namefab -f 3-deploy_web_static.py deploy -i my_ssh_private_key -u ubuntu of the archive
+    # Get the name
     new_path = archive_path.split('/')[-1]
     # Get the name of the archive without extension
     folder = new_path.split('.')[0]
@@ -86,8 +90,8 @@ def deploy():
     creates and distributes an archive to your web servers,
     using the function deploy
     """
-    archive_path = do_pack()
-    if archive_path:
-        return do_deploy(archive_path)
-    else:
+    path = do_pack()
+    if path is None:
         return False
+    else:
+        return do_deploy(path)
