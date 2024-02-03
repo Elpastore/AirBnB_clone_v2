@@ -29,9 +29,9 @@ def do_deploy(archive_path):
             format(new_path)).failed is True:
         return False
     # Creating the right path
-    if run("rm -rf /data/web_static/releases/{}/".
+    """if run("rm -rf /data/web_static/releases/{}/".
             format(folder)).failed is True:
-        return False
+        return False"""
     if run("mkdir -p /data/web_static/releases/{}/".
             format(folder)).failed is True:
         return False
