@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 from fabric.api import local, run, put, env
 
-env.hosts = ["18.234.105.201", "100.26.162.114"]
+env.hosts = ["18.234.105.201", "100.26.241.217"]
 env.user = "ubuntu"
 env.key_filename = '/AirBnB_clone_v2/my_key'
 
