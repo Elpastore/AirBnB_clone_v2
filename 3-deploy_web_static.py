@@ -2,24 +2,45 @@
 """
 Fabric file
 """
+
 from datetime import datetime
 import os
 from fabric.api import local, run, put, env
 
-env.hosts = ["18.234.105.201", "100.26.241.217"]
+env.hosts = ["18.234.105.201", "100.26.162.114"]
 env.user = "ubuntu"
 env.key_filename = '/AirBnB_clone_v2/my_key'
 
 
+def do_pack():
+    """
+    method that generate a .tgz archive
+    """
+    try:
+        if os.path.isdir("versions") is False:
+            local("mkdir versions")
+            print('versions is created')
+
+        date = datetime.now().strftime("%Y%m%d%H%M%S")
+        archive_name = f"versions/web_static_{date}.tgz"
+
+        local("tar -cvzf {} web_static".format(archive_name))
+        print('compression done')
+        print(archive_name)
+        return archive_name
+    except CommandFailed:
+        return None
+
+
 def do_deploy(archive_path):
     """
-    method for deploy web static into servers
+     method for deploy web static into servers
     """
-    if os.path.isfile(archive_path) is False:
-        print("failed file doesn't exist")
+    if os.path.exists(archive_path) is False:
+        print("Warning no file to compress")
         return False
 
-    # Get the name of the archive
+    # Get the name
     new_path = archive_path.split('/')[-1]
     # Get the name of the archive without extension
     folder = new_path.split('.')[0]
@@ -29,7 +50,8 @@ def do_deploy(archive_path):
             format(new_path)).failed is True:
         return False
     # Creating the right path
-    if run("rm -rf /data/web_static/releases/").failed is True:
+    if run("rm -rf /data/web_static/releases/{}/".
+            format(folder)).failed is True:
         return False
     if run("mkdir -p /data/web_static/releases/{}/".
             format(folder)).failed is True:
@@ -61,3 +83,15 @@ def do_deploy(archive_path):
 
     print("New version deployed!")
     return True
+
+
+def deploy():
+    """
+    creates and distributes an archive to your web servers,
+    using the function deploy
+    """
+    path = do_pack()
+    if path is None:
+        return False
+    else:
+        return do_deploy(path)

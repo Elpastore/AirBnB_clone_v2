@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# ubuntu login
+
+eval $("ssh-agent")
+
+ssh-add /AirBnB_clone_v2/my_key 
+
+ssh ubuntu@100.26.162.114
