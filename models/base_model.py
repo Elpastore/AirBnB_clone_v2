@@ -42,7 +42,6 @@ class BaseModel:
             self.id = str(uuid.uuid4())
             self.created_at = self.updated_at = datetime.now()
 
-
     def __str__(self):
         """Returns a string representation of the instance"""
         cls = (str(type(self)).split('.')[-1]).split('\'')[0]
