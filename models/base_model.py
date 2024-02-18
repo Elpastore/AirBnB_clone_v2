@@ -18,19 +18,21 @@ class BaseModel:
         id = Column(String(60), primary_key=True)
         created_at = Column(DateTime, default=datetime.utcnow())
         updated_at = Column(DateTime, default=datetime.utcnow())
+    else:
+        id = ""
 
     def __init__(self, *args, **kwargs):
-        """Instatntiates a new model"""
-        if kwargs:
-            for key, value in kwargs.items():
-                if key in ["created_at", "updated_at"]:
-                    value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
-                if key != "__class__":
-                    setattr(self, key, value)
-        else:
+        """Instantiate a new model"""
+        if 'id' not in kwargs:
             self.id = str(uuid.uuid4())
+        if 'created_at' not in kwargs:
             self.created_at = datetime.utcnow()
+        if 'updated_at' not in kwargs:
             self.updated_at = datetime.utcnow()
+
+        for key, value in kwargs.items():
+            if key != "__class__":
+                setattr(self, key, value)
 
     def __str__(self):
         """A string method
