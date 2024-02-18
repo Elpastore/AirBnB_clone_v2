@@ -21,7 +21,7 @@ def HBNB():
 def passed_text(text):
     if "_" in text:
         text = text.replace("_", " ")
-    return f'c {text}'
+    return f'C {text}'
 
 
 if __name__ == '__main__':
