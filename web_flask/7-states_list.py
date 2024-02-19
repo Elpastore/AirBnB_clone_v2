@@ -15,8 +15,8 @@ def states_list():
     fetching data from the storage engine
     """
     states_list = storage.all("State").values()
-    sorted_states = sorted(list(states_list), key=lambda state: state.name)
-    return render_template('7-states_list.html', states=sorted_states)
+    # sorted_states = sorted(list(states_list), key=lambda state: state.name)
+    return render_template('7-states_list.html', states=states_list)
 
 
 @app.teardown_appcontext
